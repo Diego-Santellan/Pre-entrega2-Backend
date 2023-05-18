@@ -39,7 +39,7 @@ export default {
         connection: {
             host: 'localhost',
             user: 'root',
-            database: 'coderhouse'
+            database: 'segundaPreentrega'
         }
     }
 }

@@ -1,121 +1,78 @@
+//NOTA: en caso de que algo no ande fijarse si alguno de los import llevaba->{}
 import express from 'express';
-const {Router} = express;
+import session from 'express-session';
+import  ExpressHandlebars from "express-handlebars";
+import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import options from './config/options.js';
+import { checkUserLogged } from "./middlewares/verificarUser.js";
+import routerCarts from './routes/routerCarts.js';
+import routerProducts from './routes/routerProducts.js';
+import routerAuth from './routes/routerAuth.js';
 
-import {
-    productsDao as productsApi,
-    cartsDao as cartsApi
-} from './daos/index.js';
+
+//coexion a la db
+mongoose.set('strictQuery', false);     //ese comando nos lo da visual para que nos deje de aparecer una advertensia 
+mongoose.connect(options.options.mongoDB.url, (err)=>{
+    if(err)return console.log(`Error al conectarse a la base de datos---> ${err}`);
+    console.log('Conexion a la DB exitosa!!');
+
+})
 
 
 // Instancio el servidor
 const app = express();
 
 
-//permisos para el administrador
-const esAdmin = true;
-
-function crearErrorNoEsAdmin(ruta, metodo) {
-    const error = {
-        error: -1,
-    }
-    if(ruta && metodo){
-        error.description = `ruta${ruta} o metodo ${metodo} no autorizado`
-    } else{
-        error.description ='no autorizado'
-    }
-    return error
-}
-
-function soloAdmins(req, res, net) {
-    if(!esAdmin) {
-        res.json(crearErrorNoEsAdmin())
-    }else{
-        next()
-    }
-}
-
-
-// Config routerProducs
-const routerProducts = new Router();
-
-routerProducts.get('/', async (req, res) => {       //Listar todos los productos
-    const products = await productsApi.toListAll()
-    res.json( products )
-    
-})
-
-routerProducts.get('/:id', async (req, res) => {        //Buscar productos por id
-    res.json( await productsApi.toList(req.params.id) )
-
-})
-
-routerProducts.post('/', soloAdmins, async (req, res) => {      //Guardar producto
-    res.json( await productsApi.save(req.body) )
-
-})
-
-routerProducts.put('/:id', soloAdmins, async (req, res) => {        //Actualizar producto
-    res.json( await productsApi.update(req.body) )
-})
-
-routerProducts.delete('/:id', soloAdmins, async (req, res) => {     //Eliminar producto
-    res.json( await productsApi.delete(req.params.id) )
-})
-
-
-// Config routerCarts
-const routerCarts = new Router();
-
-routerCarts.get('/', async (req, res) => {       //Listar todos los productos carritos
-    res.json( (await cartsApi.toListAll()).map(c => c.id) )
-    
-})
-
-routerCarts.post('/:id/products', async (req, res) => {     //Agrega un producto al carrito 
-    const cart = await cartsApi.listar(req.params.id)       //Busco el carrito en la base de datos de carritos 
-    const product = await cartsApi.listar(req.body.id)      //Busco el producto en la base de datos de productos 
-    cart.products.push(product)         //Agrego el producto al carrito en memoria (no en la base de datos) 
-    await cartsApi.update(cart)         //Actualizo el carrito con el nuevo producto agregado
-    res.end()       // "end" es para que no devuelva nada en el body de la respuesta (si no, devuelve un objeto vacío)
-})
-
-routerCarts.post('/', async (req, res) => {      //Guardar carrito
-    res.json(await cartsApi.save())
-
-})
-
-routerCarts.delete('/:id', async (req, res) => {     //Eliminar carrito
-    res.json( await cartsApi.delete(req.params.id) )
-})
-
-
-
-// Config de products en routerCart
-routerCarts.get('/:id/products', async (req, res) => {
-    const cart = await cartsApi.toList(req.params.id)
-    res.json(cart.products)
-})
-
-
-routerCarts.delete('/:id/products/:idProd', async (req, res) => {
-    const cart = await cartsApi.toList(req.params.id)
-    const index = cart.products.findIndex(p => p.id == req.params.idProd)
-    if (index != -1) {
-        cart.products.splice(index, 1)
-        await cartsApi.update(cart)
-    }
-    res.end()
-})
-
+//motor de plantilla
+//inicializar el motor de plantillas
+app.engine(".hbs",ExpressHandlebars.engine({extname: '.hbs'}));
+//ruta de las vistas
+app.set("views", __dirname+"/views");
+//vinculacion del motor a express
+app.set("view engine", ".hbs");
 
 
 //Agrego  middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(express.static('public'))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
-app.use('/api/products', routerProducts)
-app.use('/api/carts', routerCarts)
 
+//configuracion de la sesion
+app.use(session({
+    store:MongoStore.create({ //le indicamos que vamos a  tener una conexion externa, en este caso con mongo atlas
+        mongoUrl:options.mongoDB.url
+    }),
+
+    secret:"claveSecreta", //clave de encriptacion de la sesion
+
+    //config para guardar en la memoria del servidor
+    resave:false,
+    saveUninitialized:false,
+}));
+
+
+//configurar passport
+app.use(passport.initialize()); //como inicializar passport dentro de nuestra sesion
+app.use(passport.session()); //vinculamos a passport con una sesion, para que luego de la autenticacion le asignaemos una session al usuario y con ello poder utilizar bien todos los metodos
+
+
+let users =[]; //---> [{name:"diego", username:diego10, password:"123321"}]
+
+
+//routes
+app.use('/api/products', routerProducts);
+app.use('/api/carts', routerCarts);
+app.use('/api/auth', routerAuth);
+
+app.get("/home", (req,res)=>{
+    res.render("home");
+});
+
+app.get("/perfil", checkUserLogged,  (req, res) => {
+    res.render("profile");
+});
 
 export default app

@@ -1,10 +1,10 @@
 import knex from 'knex'
-import config from '../src/config.js'
+import config from '../src/config/config.js'
 
 
 //opciones SQL
-createTableProducts(knex(config.mariaDb))
-createTableCart(knex(config.mariaDb))
+createTableProducts(knex(config.sqlite3))
+createTableCart(knex(config.sqlite3))
 
 //------------------------------------------
 // products
@@ -23,9 +23,9 @@ async function createTableProducts(sqlClient){
         
         await sqlClient.destroy()
         
-        console.log('tabla products en mariaDb creada con éxito')
+        console.log('tabla products en sqlite3 creada con éxito')
     } catch (error) {
-        console.log('error al crear tabla products en mariaDb')
+        console.log('error al crear tabla products en sqlite3')
         console.log(error)
     }
     
@@ -37,20 +37,28 @@ async function createTableProducts(sqlClient){
 async function createTableCart(sqlClient) {
     
     try {
-        await sqlClient.schema.dropTableIfExists('messages');
+        await sqlClient.schema.dropTableIfExists('cart');
         
-        await sqlClient.schema.createTable('messages', table => {
+        await sqlClient.schema.createTable('cart', table => {
             table.increments('id').primary();
-            table.string('autor', 30);
-            table.string('texto', 128);
-            table.string('fyh', 50);
+            table.boolean('deleted').defaultTo(false);
+        })
+
+        await sqlClient.schema.dropTableIfExists('productsInCart');
+
+        await sqlClient.schema.createTable('productsInCart', table => {
+            table.increments('id').primary()
+            table.integer('idCart').notNullable()
+            table.string('title', 30).notNullable()
+            table.float('price').notNullable().notNullable()
+            table.string('thumbnail', 1024)
         })
         
         await sqlClient.destroy();
         
-        console.log('tabla messages en sqlite3 creada con éxito')
+        console.log('tablas carritos en sqlite3 creada con éxito')
     } catch (error) {
-        console.log('error al crear tabla messages en sqlite3')
+        console.log('error al crear tabla carritos en sqlite3')
     }
 }
 

@@ -1,4 +1,4 @@
-import config from "../../config"
+import config from "../../config/config.js"
 import SQLContainer from "../../containers/SQLContainer.js"
 
 class CartDaoSQLite3 extends SQLContainer{

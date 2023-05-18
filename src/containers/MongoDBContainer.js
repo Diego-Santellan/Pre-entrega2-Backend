@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import config from '../config.js'
+import config from '../config/config.js'
 import { asPOJO, renameField, removeField} from '../utils/ObjectUtils.js'
 
 await mongoose.connect(config.mongodb.cnxStr, config.mongodb.options)
