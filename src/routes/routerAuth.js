@@ -2,12 +2,13 @@ import express from 'express';
 import passport from 'passport';
 import { Strategy } from 'passport-local';
 import UserModel from '../models/user.model';
+import bcrypt from 'bcrypt';
+
 
 const {Router} = express;
 
 // Config routerUsers
 const router = new Router();
-
 
 
 //serializacion y deserializacion
@@ -25,6 +26,7 @@ UserModel.findById(id, (err, userDB) => {
 }); //req.user  -> se crea este objeto con los datos del usuario
 
 
+
 //crear estrategia para registrar a los usuarios
 passport.use("signupStrategy", new Strategy(  //primer parametro nombre de la estrategia, segundo parametro logica de la estrategia para registrar a los usuarios
     {
@@ -33,29 +35,67 @@ passport.use("signupStrategy", new Strategy(  //primer parametro nombre de la es
     (req, username, password, done) =>{
         //logica del registro
         //1. Verificar si ya el usuario existe en la db
-        UserModel.findOne({username: username}, (err,userDB) => { 
+        UserModel.findOne({username: username}, async (err,userDB) => { 
             if(err) return done(err, false, {message:`Hubo un error al buscar el usuario ${err}`});
             if(userDB) return done(null, false, {message: " El usuario ya existe"});
 
-            //2. Si el usuario no existe, cremaos el usuario en la DB
-            const newUser ={
-                name:req.body.name,
-                username: username,
-                password: password,
-                emil: emil,
-                address: address,
-                age: age, 
-                phoneNumber: phoneNumber,
-                avatar: avatar
-            };
-            UserModel.create(newUser, (err, userCreated) => {
-                if (err) return done(err, false, {message:`Hubo un error al crear el usuario`});
-                return done(null, userCreated, {message: "Usuario creado"});
-            });
+            try {
+                //generamos el hash de la  contraseña utilizando bcrytp
+                const salt = await bcrypt.genSalt(10);  // se utiliza bcrypt.genSalt para generar una sal aleatoria --> porque el 10? -->  El 10 refiere al costo del proceso de hash realizado por bcrypt. Bcrypt utiliza un algoritmo de hash adaptable que permite ajustar el costo computacional del proceso de hash. El costo determina la cantidad de iteraciones que bcrypt realizará para generar el hash. Un costo más alto aumenta la resistencia a ataques de fuerza bruta, pero también aumenta el tiempo necesario para calcular el hash. 10 es lo normal utilizable
+                const hashedPassword = await bcrypt.hash(password, salt);   //bcrypt.hash para generar el hash de la contraseña proporcionada por el usuario.
+
+                //2. Si el usuario no existe, cremaos el usuario en la DB
+                const newUser ={
+                    name:req.body.name,
+                    username: username,
+                    password: hashedPassword,
+                    emil: emil,
+                    address: address,
+                    age: age, 
+                    phoneNumber: phoneNumber,
+                    avatar: avatar
+                };
+
+                UserModel.create(newUser, (err, userCreated) => {
+                    if (err) return done(err, false, {message:`Hubo un error al crear el usuario`});
+                    return done(null, userCreated, {message: "Usuario creado"});
+                });
+
+            } catch (error) {
+                return done(error, false, {message:`Hubo un error al crear el usuario --> ${error} `})
+            }
+
         });
     }
 ));
 
+
+//creacion de estrategia para el login
+passport.use("loginStrategy", new Strategy(
+    {
+        usernameField:'username',
+        passwordField:'password',
+    },
+    (username, password, done) =>{
+        UserModel.findOne({username: username}, async(err, userDB) => {
+            if(err) return done(err, false, {message:`Hubo un error al buscar el usuario ${err}`});
+            if(userDB) return done(null, false, {message: " El usuario no existe"});
+
+            try {
+                //comparar la contraseña proporcionada con el hash almacenado utilizando el metodo bcrypt.compare
+                const passwordMatch = await bcrypt.compare(password, userDB.password);
+
+                if (!passwordMatch) return done(null, flase, {message:`Contraseña incorrecta`});
+
+                return done(null, userDB, {message:`Inicio de sesion exitosso`});
+
+            } catch (error) {
+                return done(error, false, { message: `Hubo un error al iniciar sesión` });
+            }
+
+        });
+    }
+));
 
 //ROUTERS
 
@@ -75,7 +115,11 @@ router.get("/registro",  (req, res) => {
 });
 
 //Para inicio de sesion
-router.post("/login", (req,res) =>{
+router.post("/login", passport.authenticate("loginStrategy",{
+    failureRedirect: "/inicio-sesion",
+    failureMessage: true
+}),(req,res) =>{
+    res.redirect("/perfil")
     
 });
 
