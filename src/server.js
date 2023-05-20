@@ -10,7 +10,8 @@ import { checkUserLogged } from "./middlewares/verificarUser.js";
 import routerCarts from './routes/routerCarts.js';
 import routerProducts from './routes/routerProducts.js';
 import routerAuth from './routes/routerAuth.js';
-
+import routerGmailMessage from './routes/routerGmailMessage.js';
+import routerWappMessage from './routes/routerWappMessage.js';
 
 //coexion a la db
 mongoose.set('strictQuery', false);     //ese comando nos lo da visual para que nos deje de aparecer una advertensia 
@@ -66,6 +67,8 @@ let users =[]; //---> [{name:"diego", username:diego10, password:"123321"}]
 app.use('/api/products', routerProducts);
 app.use('/api/carts', routerCarts);
 app.use('/api/auth', routerAuth);
+app.use('/api/gmail-message', routerGmailMessage);
+app.use('/api/wapp-message', routerWappMessage);
 
 app.get("/home", (req,res)=>{
     res.render("home");
