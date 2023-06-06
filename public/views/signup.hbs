@@ -5,7 +5,7 @@
 {{/if}}
 
 <div class="mx-5 my-2">
-    <form action="/signup" method="POST">
+    <form action="/api/auth/signup" method="POST">
         <label>Nombre:</label>
         <input class="form-control" type="text" name="name" placeholder="Ingresa tu nombre"/>
         <label>Email:</label>
@@ -15,5 +15,5 @@
         <button type="submit" class="btn btn-info my-3">Registrarse</button>
     </form>
     <hr>
-    <a href="/inicio-sesion">Ya tiene una cuenta?, inicia sesión</a>
+    <a href="/api/auth/inicio-sesion">Ya tiene una cuenta?, inicia sesión</a>
 </div>

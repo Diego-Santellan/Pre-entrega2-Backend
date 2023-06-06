@@ -6,7 +6,7 @@ const adminPasswordEmail="pihzmsotudqvckgc"
 
 
 //configurar un canal para realizar el envio de mensajes
-const transporter = nodemailer.createTransport({        //transporte va a ser el canal
+export const transporter = nodemailer.createTransport({        //transporte va a ser el canal
     host: 'smtp.gmail.com',
     port: 587,
     auth: {

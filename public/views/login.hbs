@@ -6,7 +6,7 @@
 {{/if}}
 
 <div class="mx-5 my-2">
-    <form action="/login" method="POST">
+    <form action="/api/auth/login" method="POST">
         <label>Email:</label>
         <input class="form-control" type="text" name="username" placeholder="Ingresa tu username"/>
         <label>password:</label>
@@ -14,5 +14,5 @@
         <button type="submit" class="btn btn-info my-3">Iniciar sesión</button>
     </form>
     <hr>
-    <a href="/registro">Todavía no tienes una cuenta?, registrate</a>
+    <a href="/api/auth/registro">Todavía no tienes una cuenta?, registrate</a>
 </div>

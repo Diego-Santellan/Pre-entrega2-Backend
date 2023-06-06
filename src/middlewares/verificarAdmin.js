@@ -13,12 +13,11 @@ function crearErrorNoEsAdmin(ruta, metodo) {
     return error
 }
 
-function soloAdmins(req, res, net) {
+export function soloAdmins(req, res, net) {
     if(!esAdmin) {
         res.json(crearErrorNoEsAdmin())
     }else{
         next()
     }
 }
-
-module.exports = {soloAdmins};
+export default {soloAdmins};

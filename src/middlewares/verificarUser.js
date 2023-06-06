@@ -1,4 +1,4 @@
-const checkUserLogged = (req, res, next) => {
+export const checkUserLogged = (req, res, next) => {
     //si el usuario esta autenticado
     if (req.isAuthenticated()) {      //si en sesion hay una varia user, quiere decir que esta autenticado, debido a que estaria la sesion iniciada
         next();     //nos pasa al siguiente paso de la operacion, en este caso la de cerrar sesion
@@ -7,4 +7,4 @@ const checkUserLogged = (req, res, next) => {
     }
 }
 
-module.exports = {checkUserLogged};
+export default {checkUserLogged};

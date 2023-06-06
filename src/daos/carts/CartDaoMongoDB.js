@@ -1,6 +1,6 @@
 import MongoDBContainer from "../../containers/mongoDBContainer.js";
 
-class CartDaoMongoDB extends MongoDBContaine{
+class CartDaoMongoDB extends MongoDBContainer{
     constructor(){
         super('carts',{
             products: {type: [], required:true}

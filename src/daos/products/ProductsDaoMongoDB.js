@@ -1,6 +1,6 @@
 import MongoDBContainer from "../../containers/mongoDBContainer.js";
 
-class ProductsDaoMongoDB extends MongoDBContaine{
+class ProductsDaoMongoDB extends MongoDBContainer{
     constructor(){
         super('products',{
             title: { type: String, required: true },

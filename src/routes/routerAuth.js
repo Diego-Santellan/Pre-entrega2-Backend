@@ -1,14 +1,14 @@
 import express from 'express';
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import UserModel from '../models/user.model';
-import bcrypt from 'bcrypt';
+import UserModel from '../models/user.model.js';
+import bcrypt from "bcryptjs";
 
 
 const {Router} = express;
 
 // Config routerUsers
-const router = new Router();
+const routerAuth = new Router();
 
 
 //serializacion y deserializacion
@@ -100,22 +100,21 @@ passport.use("loginStrategy", new Strategy(
 //ROUTERS
 
 //Para registrar un usuario (tipo crear cuenta)
-router.post("/signup", passport.authenticate("signupStrategy", {
-    failureRedirect:"/registro",
-    failureMessage:true //req.session.messages => se genera un arreglo con mensajes
+routerAuth.post("/signup", passport.authenticate("signupStrategy", {
+    failureRedirect:"registro",
+    failureMessage:true, //req.session.messages => se genera un arreglo con mensajes
 }), (req, res) => {     
-    res.redirect("/perfil")
-
+    res.redirect("/perfil");
 });
 
-router.get("/registro",  (req, res) => {
+routerAuth.get("/registro",  (req, res) => {
     const errorMsg = req.session.messages ? req.session.messages[0] :'';
     res.render("signup", {error: errorMsg});
     req.session.messages = [];
 });
 
 //Para inicio de sesion
-router.post("/login", passport.authenticate("loginStrategy",{
+routerAuth.post("/login", passport.authenticate("loginStrategy",{
     failureRedirect: "/inicio-sesion",
     failureMessage: true
 }),(req,res) =>{
@@ -123,12 +122,21 @@ router.post("/login", passport.authenticate("loginStrategy",{
     
 });
 
-router.get("/inicio-sesion",(req,res)=>{
+routerAuth.get("/inicio-sesion",(req,res)=>{
     res.render("login");
 });
 
+//Perfil
+routerAuth.get("/perfil",(req,res)=>{
+    res.render("profile");
+});
+
+routerAuth.post("/perfil",(req,res)=>{
+    res.render("profile");
+});
+
 //por lo general se usa un metodo post
-router.get("/logout",  (req, res) => { 
+routerAuth.get("/logout",  (req, res) => { 
     req.logout(error => {       
         if(error) return res.send("Hubo un error al cerrar la sesion");     //para eliminar la session de la db
 
@@ -141,4 +149,4 @@ router.get("/logout",  (req, res) => {
 });
 
 
-export default {routerAuth:router};
+export default routerAuth;

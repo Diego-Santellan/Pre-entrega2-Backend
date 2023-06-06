@@ -12,15 +12,16 @@ import routerProducts from './routes/routerProducts.js';
 import routerAuth from './routes/routerAuth.js';
 import routerGmailMessage from './routes/routerGmailMessage.js';
 import routerWappMessage from './routes/routerWappMessage.js';
+import path from "path";
 
-//coexion a la db
+//conexion a la db
 mongoose.set('strictQuery', false);     //ese comando nos lo da visual para que nos deje de aparecer una advertensia 
-mongoose.connect(options.options.mongoDB.url, (err)=>{
-    if(err)return console.log(`Error al conectarse a la base de datos---> ${err}`);
-    console.log('Conexion a la DB exitosa!!');
-
-})
-
+mongoose.connect(options.options.mongoDB.url)
+    .then(()=>console.log('Conexion a la DB exitosa!!'))
+    .catch(
+        (err)=> {
+            if(err)return console.log(`Error al conectarse a la base de datos---> ${err}`)
+        })
 
 // Instancio el servidor
 const app = express();
@@ -30,7 +31,8 @@ const app = express();
 //inicializar el motor de plantillas
 app.engine(".hbs",ExpressHandlebars.engine({extname: '.hbs'}));
 //ruta de las vistas
-app.set("views", __dirname+"/views");
+const __dirname = path.resolve(); //es para obtener la ruta obsolutadel directorio actual
+app.set("views", path.join(__dirname,"public","views")); // dirigirnos a la ruta dentro de "views"
 //vinculacion del motor a express
 app.set("view engine", ".hbs");
 
@@ -44,7 +46,8 @@ app.use(express.static('public'));
 //configuracion de la sesion
 app.use(session({
     store:MongoStore.create({ //le indicamos que vamos a  tener una conexion externa, en este caso con mongo atlas
-        mongoUrl:options.mongoDB.url
+        // mongoUrl:options.mongoDB.url
+        mongoUrl: options.options.mongoDB.url
     }),
 
     secret:"claveSecreta", //clave de encriptacion de la sesion

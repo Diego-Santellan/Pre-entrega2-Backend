@@ -1,6 +1,6 @@
 import app from './server.js'
-
-const PORT = 3030
+import options from './config/options.js'
+const PORT = options.options.server.port;
 const connectedServer = app.listen(PORT, () => {
     console.log(`Servidor http escuchando en el puerto ${connectedServer.address().port}`)
 })

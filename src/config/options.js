@@ -1,6 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 const options = {
+    server:{
+        port:process.env.PORT
+    },
     mongoDB:{
-        url:"mongodb+srv://coder32195-Class20:coder32195-Class20@cluster0.6ozngzz.mongodb.net/authDB?retryWrites=true&w=majority"
+        url:process.env.MONGO_DB
     }
 };
 export default {options};
