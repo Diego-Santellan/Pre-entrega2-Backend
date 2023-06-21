@@ -1,13 +1,13 @@
 
 <h2 class="mx-5 my-2">Formulario Inicio de sesión</h2>
 
-{{#if error}}
+{{#if error}}       
     <p class="mx-5 text-danger">{{error}}</p>
 {{/if}}
 
 <div class="mx-5 my-2">
     <form action="/api/auth/login" method="POST">
-        <label>Email:</label>
+        <label>Username:</label>
         <input class="form-control" type="text" name="username" placeholder="Ingresa tu username"/>
         <label>password:</label>
         <input class="form-control" type="password" name="password" placeholder="Ingresa la contraseña"/>

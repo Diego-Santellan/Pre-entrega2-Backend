@@ -1,15 +1,11 @@
-import express from 'express';
+import { Router } from "express";
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import UserModel from '../models/user.model.js';
+import UserModel from "../models/dbModels/user/user.model.js";
 import bcrypt from "bcryptjs";
+import { checkUserLogged } from "../middlewares/verificarUser.js";
 
-
-const {Router} = express;
-
-// Config routerUsers
 const routerAuth = new Router();
-
 
 //serializacion y deserializacion
 // serializar:{.. usuario} -> {id:1}  "Contexto: comvertimos a un usuario en un objeto"
@@ -17,95 +13,92 @@ passport.serializeUser((user, done) => {
     return done(null, user.id)
 }); //req.session.passport.user = {id:1}    ---> por el metodo don que esp propio de js nos agarra al usuario y l convierte a un objeto que nos da un id en ese req que esta señalizado
 
-// deserializar:{id:1} -> {.. usuario} "Contexto: inverso a la serializacion"
-passport.deserializeUser((id, done) =>{
-//verificamos si el usuario existe en la DB
-UserModel.findById(id, (err, userDB) => {
-    return done(err, userDB);
-})
-}); //req.user  -> se crea este objeto con los datos del usuario
-
-
+// }); //req.user  -> se crea este objeto con los datos del usuario
+passport.deserializeUser((id, done) => {
+    UserModel.findById(id)
+      .then(userDB => {
+        return done(null, userDB);
+      })
+      .catch(err => {
+        return done(err, null);
+      });
+});
 
 //crear estrategia para registrar a los usuarios
-passport.use("signupStrategy", new Strategy(  //primer parametro nombre de la estrategia, segundo parametro logica de la estrategia para registrar a los usuarios
+passport.use("signupStrategy", new Strategy(//primer parametro nombre de la estrategia, segundo parametro logica de la estrategia para registrar a los usuarios
     {
-        passReqToCallback: true,
+      passReqToCallback: true,
     },
-    (req, username, password, done) =>{
-        //logica del registro
-        //1. Verificar si ya el usuario existe en la db
-        UserModel.findOne({username: username}, async (err,userDB) => { 
-            if(err) return done(err, false, {message:`Hubo un error al buscar el usuario ${err}`});
-            if(userDB) return done(null, false, {message: " El usuario ya existe"});
-
-            try {
-                //generamos el hash de la  contraseña utilizando bcrytp
-                const salt = await bcrypt.genSalt(10);  // se utiliza bcrypt.genSalt para generar una sal aleatoria --> porque el 10? -->  El 10 refiere al costo del proceso de hash realizado por bcrypt. Bcrypt utiliza un algoritmo de hash adaptable que permite ajustar el costo computacional del proceso de hash. El costo determina la cantidad de iteraciones que bcrypt realizará para generar el hash. Un costo más alto aumenta la resistencia a ataques de fuerza bruta, pero también aumenta el tiempo necesario para calcular el hash. 10 es lo normal utilizable
-                const hashedPassword = await bcrypt.hash(password, salt);   //bcrypt.hash para generar el hash de la contraseña proporcionada por el usuario.
-
-                //2. Si el usuario no existe, cremaos el usuario en la DB
-                const newUser ={
-                    name:req.body.name,
-                    username: username,
-                    password: hashedPassword,
-                    emil: emil,
-                    address: address,
-                    age: age, 
-                    phoneNumber: phoneNumber,
-                    avatar: avatar
-                };
-
-                UserModel.create(newUser, (err, userCreated) => {
-                    if (err) return done(err, false, {message:`Hubo un error al crear el usuario`});
-                    return done(null, userCreated, {message: "Usuario creado"});
-                });
-
-            } catch (error) {
-                return done(error, false, {message:`Hubo un error al crear el usuario --> ${error} `})
+    async (req, username, password, done) => {
+        try {
+            // LOGICA DEL REGISTRO
+            // 1. Verificar si el usuario ya existe en la base de datos
+            const userDB = await UserModel.findOne({ username: username });
+    
+            if (userDB) {
+            return done(null, false, { message: "El usuario ya existe" });
             }
+            
+            //generamos el hash de la  contraseña utilizando bcrytp
+            const salt = await bcrypt.genSalt(10);  // se utiliza bcrypt.genSalt para generar una sal aleatoria --> porque el 10? -->  El 10 refiere al costo del proceso de hash realizado por bcrypt. Bcrypt utiliza un algoritmo de hash adaptable que permite ajustar el costo computacional del proceso de hash. El costo determina la cantidad de iteraciones que bcrypt realizará para generar el hash. Un costo más alto aumenta la resistencia a ataques de fuerza bruta, pero también aumenta el tiempo necesario para calcular el hash. 10 es lo normal utilizable
+            const hashedPassword = await bcrypt.hash(password, salt);   //bcrypt.hash para generar el hash de la contraseña proporcionada por el usuario.
+                        
+            // 2. Crear el nuevo usuario en la base de datos
+            const newUser = {
+                name: req.body.name,
+                username: username,
+                password: hashedPassword,
+                email: req.body.email,
+                address: req.body.address,
+                age: req.body.age,
+                phoneNumber: req.body.phoneNumber
+                
+            };
+  
+            const userCreated = await UserModel.create(newUser);
+            
+            return done(null, userCreated, { message: "Usuario creado" });
 
-        });
+        } catch (error) {
+            return done(error, false, { message: "Hubo un error al crear el usuario" });
+        }
     }
 ));
-
+  
 
 //creacion de estrategia para el login
 passport.use("loginStrategy", new Strategy(
     {
-        usernameField:'username',
-        passwordField:'password',
+        passReqToCallback:true,
     },
-    (username, password, done) =>{
-        UserModel.findOne({username: username}, async(err, userDB) => {
-            if(err) return done(err, false, {message:`Hubo un error al buscar el usuario ${err}`});
-            if(userDB) return done(null, false, {message: " El usuario no existe"});
+    (req, username, password, done) =>{
+        UserModel.findOne({username:username})
+            .then(async (userDB) => {
+                if (!userDB) {
+                    return done(null, false, {message: "El usuario no existe"});
+                }
+                try {
+                    const isPasswordVaild = await bcrypt.compare(password, userDB.password);
+                    if (!isPasswordVaild) {
+                        return done(null, false, { message: "Contraseña incorrecta"});
+                    }
+                    return done (null, userDB);
+                } catch (error) {
+                    return done(error);
+                }
+            });
 
-            try {
-                //comparar la contraseña proporcionada con el hash almacenado utilizando el metodo bcrypt.compare
-                const passwordMatch = await bcrypt.compare(password, userDB.password);
-
-                if (!passwordMatch) return done(null, flase, {message:`Contraseña incorrecta`});
-
-                return done(null, userDB, {message:`Inicio de sesion exitosso`});
-
-            } catch (error) {
-                return done(error, false, { message: `Hubo un error al iniciar sesión` });
-            }
-
-        });
     }
 ));
 
-//ROUTERS
 
-//Para registrar un usuario (tipo crear cuenta)
+//ROUTERS
+// Para registrar un usuario 
 routerAuth.post("/signup", passport.authenticate("signupStrategy", {
-    failureRedirect:"registro",
+    successRedirect: '/api/auth/perfil',
+    failureRedirect:"/api/auth/registro",
     failureMessage:true, //req.session.messages => se genera un arreglo con mensajes
-}), (req, res) => {     
-    res.redirect("/perfil");
-});
+}));
 
 routerAuth.get("/registro",  (req, res) => {
     const errorMsg = req.session.messages ? req.session.messages[0] :'';
@@ -113,25 +106,21 @@ routerAuth.get("/registro",  (req, res) => {
     req.session.messages = [];
 });
 
-//Para inicio de sesion
-routerAuth.post("/login", passport.authenticate("loginStrategy",{
-    failureRedirect: "/inicio-sesion",
-    failureMessage: true
-}),(req,res) =>{
-    res.redirect("/perfil")
-    
-});
+//para loguear un usuario
+routerAuth.post("/login", passport.authenticate("loginStrategy", {
+    successRedirect: '/api/auth/perfil',
+    failureRedirect:"/api/auth/inicio-sesion",
+    failureMessage:true, //req.session.messages => se genera un arreglo con mensajes
+}));
 
-routerAuth.get("/inicio-sesion",(req,res)=>{
-    res.render("login");
+routerAuth.get("/inicio-sesion", (req, res) => {
+    const errorMsg = req.session.messages ? req.session.messages[0] :'';
+    res.render("login", {error: errorMsg});
+    req.session.messages = [];
 });
 
 //Perfil
-routerAuth.get("/perfil",(req,res)=>{
-    res.render("profile");
-});
-
-routerAuth.post("/perfil",(req,res)=>{
+routerAuth.get("/perfil", checkUserLogged, (req,res)=>{
     res.render("profile");
 });
 
@@ -141,12 +130,11 @@ routerAuth.get("/logout",  (req, res) => {
         if(error) return res.send("Hubo un error al cerrar la sesion");     //para eliminar la session de la db
 
         req.session.destroy( error => {
-            if(error) return res.send("Hubo un error al cerrar la sesion");     //para eliminar la sesion del lado del servidor
+            if(error) return console.log("Hubo un error al cerrar la sesion");     //para eliminar la sesion del lado del servidor
             res.redirect("/home"); 
         });
 
     });
 });
-
 
 export default routerAuth;

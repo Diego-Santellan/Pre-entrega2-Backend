@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import config from '../config/config.js';
 import { asPOJO, renameField, removeField} from '../utils/ObjectUtils.js';
+// import config from '../config/config.js';
 
-await mongoose.connect(config.mongodb.cnxStr, config.mongodb.options)
+// await mongoose.connect(config.mongodb.cnxStr, config.mongodb.options)
 
 class MongoDBContainer{
     
@@ -39,7 +39,7 @@ class MongoDBContainer{
 
     async save(obj) {
         try {
-            const doc = await this.collection.create(obj)
+            let doc = await this.collection.create(obj)
             doc = asPOJO(doc)
             renameField(doc, '_id', 'id')
             removeField(doc, '__v')
@@ -50,23 +50,25 @@ class MongoDBContainer{
         }
     }
 
-    async update(obj) {
+    async update(newObj, id) {
         try {
-            renameField(obj, '_id', 'id')
-            const {N, NModified} = await this.collection.replaceOne({'_id': obj._id}, obj) 
-            if (N == 0 || NModified == 0) {
-                throw new Error('Error al actulizar, elemento no encontrado')
+            let obj = await this.toList(id)
+            
+            renameField(obj, 'id', '_id')
+            const { n, nModified } = await this.collection.updateOne({ '_id': obj._id }, newObj)
+            if (n == 0 || nModified == 0) {
+                throw new Error('Error al actualizar: no encontrado')
             } else {
-                renameField(obj, '_id', 'id')
-                removeField(obj, '__v')
-                return asPOJO(obj)
+                renameField(newObj, '_id', 'id')
+                removeField(newObj, '__v')
+                return asPOJO(newObj)
+
             }
         } catch (error) {
-            throw new Error(`Error al delete: ${error}`)
+            throw new Error(`Error al actualizar: ${error}`)
         }
     }
-
-
+ 
 
     async delete(id) {
         try {
@@ -74,6 +76,7 @@ class MongoDBContainer{
             if (N == 0 || Ndeleted == 0) {
                 throw new Error('Error al borrar: objeto no encontrado')
             }
+            return 'Eliminacion exitosa!'
         } catch (error) {
             throw new Error(`Error al delete: ${error}`)
         }
@@ -88,6 +91,6 @@ class MongoDBContainer{
         }
     }
 
-
 }
 export default MongoDBContainer
+

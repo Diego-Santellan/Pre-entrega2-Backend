@@ -28,7 +28,7 @@ routerProducts.post('/', soloAdmins, async (req, res) => {      //Guardar produc
 });
 
 routerProducts.put('/:id', soloAdmins, async (req, res) => {        //Actualizar producto
-    res.json( await productsApi.update(req.body) )
+    res.json( await productsApi.update(req.body, req.params.id) )
 });
 
 routerProducts.delete('/:id', soloAdmins, async (req, res) => {     //Eliminar producto

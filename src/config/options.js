@@ -6,7 +6,7 @@ const options = {
         port:process.env.PORT
     },
     mongoDB:{
-        url:process.env.MONGO_DB
+        url:process.env.MONGO_DB_ATLAS
     }
 };
 export default {options};

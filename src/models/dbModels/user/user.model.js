@@ -8,37 +8,34 @@ const userSchema = new mongoose.Schema({
     //definimos las propiedades y caracteristicas de los usuarios antes de guardar en al DB
     name:{
         type:String,
-        require:true
+        required:true
     },
     username:{
         type:String,
-        require:true,
-        unique: true    //coando para que no se vuelvan a repetir los nombres de los usuarios en la DB
+        required:true,
+        unique: true    //comando para que no se vuelvan a repetir los nombres de los usuarios en la DB
     },
     email:{
         type:String,
-        require:true
+        required:true,
+        unique:true
     },
     password:{
         type:String,
-        require:true
+        required:true
     },
     address:{
         type:String,
-        require:true
+        required:true
     },
     age:{
         type:Number,
-        require:true
+        required:true
     },
     phoneNumber:{
         type:String,
-        require:true
-    },
-    avatar:{
-        type:String,
-        require:true
-    },
+        required:true
+    }
     
 });
 

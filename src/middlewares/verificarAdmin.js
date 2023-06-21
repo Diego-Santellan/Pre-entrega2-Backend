@@ -1,5 +1,5 @@
 //permisos para el administrador
-const esAdmin = true;
+const esAdmin = process.env.ADMIN;
 
 function crearErrorNoEsAdmin(ruta, metodo) {
     const error = {
@@ -13,11 +13,11 @@ function crearErrorNoEsAdmin(ruta, metodo) {
     return error
 }
 
-export function soloAdmins(req, res, net) {
+export function soloAdmins(req, res, next) {
     if(!esAdmin) {
-        res.json(crearErrorNoEsAdmin())
+        res.json(crearErrorNoEsAdmin());
     }else{
-        next()
+        next();
     }
 }
 export default {soloAdmins};
