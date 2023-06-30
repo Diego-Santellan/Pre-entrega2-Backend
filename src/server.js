@@ -67,18 +67,10 @@ let users =[]; //---> [{name:"diego", username:diego10, password:"123321"}]
 
 
 //routes
-app.use('/api/products', routerProducts);
-app.use('/api/carts', routerCarts);
+app.use('/api/products', checkUserLogged, routerProducts);
+app.use('/api/carts',checkUserLogged, routerCarts);
 app.use('/api/auth', routerAuth);
-app.use('/api/gmail-message', routerGmailMessage);
-app.use('/api/wapp-message', routerWappMessage);
-
-app.get("/home", (req,res)=>{
-    res.render("home");
-});
-
-app.get("/perfil", checkUserLogged,  (req, res) => {
-    res.render("profile");
-});
+app.use('/api/gmail-message',checkUserLogged, routerGmailMessage);
+app.use('/api/wapp-message',checkUserLogged, routerWappMessage);
 
 export default app

@@ -14,3 +14,20 @@ label {
 .table td, .table th {
     vertical-align: middle;
 }
+
+.bg-secondary-light {
+    background-color: #D7D9D9; /* Aquí puedes ajustar el color a tu preferencia */
+}
+  
+.bg-warning-dark{
+    background-color: #8C7561; /* Aquí puedes ajustar el color a tu preferencia */
+}
+  /* 
+.bg-secondary-light {
+    background-color: #D7D9D9; 
+}
+  
+.bg-secondary-light {
+    background-color: #D7D9D9;  
+}
+   */

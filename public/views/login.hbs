@@ -1,18 +1,20 @@
 
-<h2 class="mx-5 my-2">Formulario Inicio de sesión</h2>
+<h2 class="mx-5 mt-5">Formulario Inicio de sesión</h2>
 
 {{#if error}}       
     <p class="mx-5 text-danger">{{error}}</p>
 {{/if}}
 
-<div class="mx-5 my-2">
-    <form action="/api/auth/login" method="POST">
-        <label>Username:</label>
-        <input class="form-control" type="text" name="username" placeholder="Ingresa tu username"/>
-        <label>password:</label>
-        <input class="form-control" type="password" name="password" placeholder="Ingresa la contraseña"/>
-        <button type="submit" class="btn btn-info my-3">Iniciar sesión</button>
-    </form>
-    <hr>
-    <a href="/api/auth/registro">Todavía no tienes una cuenta?, registrate</a>
-</div>
+<section class="d-flex justify-content-center">
+    <div class="mx-5 my-2 w-50">
+        <form action="/api/auth/login" method="POST">
+            <label>Username:</label>
+            <input class="form-control" type="text" name="username" placeholder="Ingresa tu username"/>
+            <label>password:</label>
+            <input class="form-control" type="password" name="password" placeholder="Ingresa la contraseña"/>
+            <button type="submit" class="btn btn-secondary my-3">Iniciar sesión</button>
+        </form>
+        <hr>
+        <a href="/api/auth/registro">Todavía no tienes una cuenta?, registrate</a>
+    </div>
+</section>

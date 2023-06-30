@@ -1,39 +1,40 @@
-<h2 class="mx-5 my-2">Formulario de Registro</h2>
+<h2 class="mx-5 mt-5">Formulario de Registro</h2>
 
 {{#if error}}       {{!-- muestra los errores en la pantalla --}}
     <p class="mx-5 text-danger">{{error}}</p>
 {{/if}}
+<section class="d-flex justify-content-center">
+    <div class="mx-5 my-3 w-50">
+        <form action="/api/auth/signup" method="POST">
+            <label>Nombre:</label>
+            <input class="form-control" type="text" name="name" placeholder="Ingresa tu nombre"/>
+            
+            <label>Username:</label>
+            <input class="form-control" type="text" name="username" placeholder="Ingresa tu username"/>
+            
+            <label>Email:</label>
+            <input class="form-control" type="email" name="email" placeholder="Ingresa tu correo"/>
+            
+            <label>password:</label>
+            <input class="form-control" type="password" name="password" placeholder="Ingresa la contraseña"/>
+            
+            
+            <label>Dirreción:</label>
+            <input class="form-control" type="text" name="address" placeholder="Ingresa tu dirección"/>
+            
+            
+            <label>Edad:</label>
+            <input class="form-control" type="number" name="age" placeholder="Ingresa tu edad"/>
+            
+            
+            <label>Tel.:</label>
+            <input class="form-control" type="number" name="phoneNumber" placeholder="Ingresa tu numero de telefono"/>
 
-<div class="mx-5 my-2">
-    <form action="/api/auth/signup" method="POST">
-        <label>Nombre:</label>
-        <input class="form-control" type="text" name="name" placeholder="Ingresa tu nombre"/>
-        
-        <label>Username:</label>
-        <input class="form-control" type="text" name="username" placeholder="Ingresa tu username"/>
-        
-        <label>Email:</label>
-        <input class="form-control" type="email" name="email" placeholder="Ingresa tu correo"/>
-        
-        <label>password:</label>
-        <input class="form-control" type="password" name="password" placeholder="Ingresa la contraseña"/>
-        
-        
-        <label>Dirreción:</label>
-        <input class="form-control" type="text" name="address" placeholder="Ingresa tu dirección"/>
-        
-        
-        <label>Edad:</label>
-        <input class="form-control" type="number" name="age" placeholder="Ingresa tu edad"/>
-        
-        
-        <label>Tel.:</label>
-        <input class="form-control" type="number" name="phoneNumber" placeholder="Ingresa tu numero de telefono"/>
 
-
-        <button type="submit" class="btn btn-info my-3">Registrarse</button>
-    </form>
-    <hr>
-    <br>
-    <a href="/api/auth/inicio-sesion">Ya tiene una cuenta?, inicia sesión</a>
-</div>
+            <button type="submit" class="btn btn-secondary my-3">Registrarse</button>
+        </form>
+        <hr>
+        <br>
+        <a href="/api/auth/inicio-sesion">Ya tiene una cuenta?, inicia sesión</a>
+    </div>
+</section>

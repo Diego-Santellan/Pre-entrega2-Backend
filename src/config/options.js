@@ -7,6 +7,10 @@ const options = {
     },
     mongoDB:{
         url:process.env.MONGO_DB_ATLAS
+    },
+    auth:{
+        esAdmin:process.env.ADMIN
     }
+
 };
 export default {options};

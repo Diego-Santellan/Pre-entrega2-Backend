@@ -1,5 +1,14 @@
-//permisos para el administrador
-const esAdmin = process.env.ADMIN;
+import dotenv from "dotenv";
+dotenv.config();
+
+export function soloAdmins (req, res, next){
+    const esAdmin = true;
+    if(!esAdmin) {
+        res.json(crearErrorNoEsAdmin());
+    }else{
+        next();
+    }
+}
 
 function crearErrorNoEsAdmin(ruta, metodo) {
     const error = {
@@ -13,11 +22,4 @@ function crearErrorNoEsAdmin(ruta, metodo) {
     return error
 }
 
-export function soloAdmins(req, res, next) {
-    if(!esAdmin) {
-        res.json(crearErrorNoEsAdmin());
-    }else{
-        next();
-    }
-}
-export default {soloAdmins};
+export default soloAdmins;
