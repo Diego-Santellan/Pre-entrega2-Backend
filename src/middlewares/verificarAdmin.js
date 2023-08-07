@@ -2,12 +2,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export function soloAdmins (req, res, next){
-    const esAdmin = true;
-    if(!esAdmin) {
+    if( req.user.role !== "admin") {
         res.json(crearErrorNoEsAdmin());
     }else{
+        // const userAdmin = req.user.role == "admin";
+        // console.log(userAdmin);
+        // res.render('navBar', {userAdmin});;
         next();
+        
+        
     }
+
 }
 
 function crearErrorNoEsAdmin(ruta, metodo) {

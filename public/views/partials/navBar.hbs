@@ -1,22 +1,31 @@
 <nav class="navbar navbar-expand-lg bg-warning-dark">
   <div class="container-fluid">
-    <a class="navbar-brand fs-4 fw-bold" href="#">Estilo Textil</a>
+    <a class="navbar-brand fs-4 fw-bold" href="#">Mi Mochila</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse d-flex justify-content-center" id="navbarNav">
+    <div class="collapse navbar-collapse d-flex justify-content-end me-5" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link mx-2 fs-5 fw-bolder " aria-current="page" href="/home">Home</a>
+        <li>
+          <form class="d-flex" role="search" action="/api/products/search" method="POST">
+            <input class="form-control me-2" type="search" name="title" placeholder="Buscar productos" aria-label="Search">
+            <button id="busqueda" class="btn btn-outline-dark" type="submit">Buscar</button>
+          </form>
         </li>
         <li class="nav-item">
+          <a class="nav-link mx-2 fs-5 fw-bolder " aria-current="page" href="/api/products/">Home</a>
+        </li>
+        {{!-- <li class="nav-item">
           <a class="nav-link mx-2 fs-5 fw-bolder" href="/api/auth/registro">Registro</a>
         </li>
         <li class="nav-item">
           <a class="nav-link mx-2 fs-5 fw-bolder" href="/api/auth/inicio-sesion">Iniciar sesion</a>
-        </li>
+        </li> --}}
         <li class="nav-item">
           <a class="nav-link mx-2 fs-5 fw-bolder" href="/api/auth/perfil">Perfil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link mx-2 fs-5 fw-bolder" href="/api/auth/home" style="display: {{#if esAmind}}block{{else}}none{{/if}}">Admin</a>
         </li>
       </ul>
     </div>

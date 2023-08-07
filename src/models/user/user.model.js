@@ -35,8 +35,13 @@ const userSchema = new mongoose.Schema({
     phoneNumber:{
         type:String,
         required:true
+    },
+    role:{
+        type:String,
+    },
+    thumbnail:{
+        type: String, 
     }
-    
 });
 
 //definimos el modelo    

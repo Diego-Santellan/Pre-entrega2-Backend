@@ -1,5 +1,11 @@
-h1 {
-    color: blue;
+main{
+    min-height:70vh;
+}
+
+div#carouselExampleInterval > div.carousel-inner > div.carousel-item > img{
+    height: 50vh;
+    object-fit: cover;
+
 }
 
 label {
@@ -16,18 +22,116 @@ label {
 }
 
 .bg-secondary-light {
-    background-color: #D7D9D9; /* Aquí puedes ajustar el color a tu preferencia */
+    background-color: #e4ebeb; /* Aquí puedes ajustar el color a tu preferencia */
+    /* background: linear-gradient(#ffff51, #7052ff); */
 }
   
-.bg-warning-dark{
-    background-color: #8C7561; /* Aquí puedes ajustar el color a tu preferencia */
+.bg-warning-dark, button.btn-success{
+    background-color: #7052ff; /* Aquí puedes ajustar el color a tu preferencia */
 }
-  /* 
-.bg-secondary-light {
-    background-color: #D7D9D9; 
+
+div.container{
+    background-image: url("../../../fondo-abstracto-efecto-dinamico-degradados-color-amarillo-morado-oscuro-moda_181182-833.jpg");
 }
-  
-.bg-secondary-light {
-    background-color: #D7D9D9;  
+
+h1{
+    color: #7052ff;
 }
-   */
+
+a.nav-link, a.navbar-brand, h4, h5{
+    color: #ffff51;
+}
+
+footer, ul#enlacesFooter>li>a{
+    color: white;
+    text-decoration: none;
+}
+a#arrow{
+    text-decoration: none;  
+    color: #ff81ff; 
+    font-size:xx-large;
+    float: inline-start;
+}
+
+img.logo{
+    width: 20vw;
+}
+ 
+.fa-whatsapp{
+    font-size: 3vw;
+    color: #ff81ff;
+}
+ 
+.fa-facebook{
+    font-size: 3vw;
+    color: #ff81ff;
+}
+ 
+.fa-instagram{
+    font-size: 3vw;
+    color: #ff81ff;
+}
+
+section.politics >h2{
+    margin-top: 3vw;
+    color: #ff81ff;
+}
+
+div.card > div.d-flex, div.d-flex > div.col-md-4,  div.col-md-4>img{
+    height: 50vh;
+}
+
+div.vr{
+    width: 1%;
+    background-color: #ff81ff;
+}
+
+button{
+    border: none;
+    background-color: #ff81ff;
+}
+
+button#busqueda{
+    border: none;
+    background-color: #f5f57d;
+}
+
+
+
+div.image-container{
+    display: inline-block;
+    position: relative;
+}
+
+div.image-container.active{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+}
+
+div.image-container img{
+    z-index: 1;
+}
+
+div.image-container.active::after{
+    content: '';
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.70);
+    z-index: 0;
+
+}
+
+div.image-container.active img{
+    border-radius: 20px !important;
+    object-fit: cover;
+
+}

@@ -24,7 +24,7 @@ mongoose.connect(options.options.mongoDB.url)
         })
 
 // Instancio el servidor
-const app = express();
+const app = express(); // SI SE BORRA LO ANTERIOR DESCOMENTAR ESTE
 
 
 //motor de plantilla
@@ -40,8 +40,7 @@ app.set("view engine", ".hbs");
 //Agrego  middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 //configuracion de la sesion
 app.use(session({

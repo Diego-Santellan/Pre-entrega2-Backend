@@ -1,6 +1,7 @@
 export const checkUserLogged = (req, res, next) => {
     //si el usuario esta autenticado
     if (req.isAuthenticated()) {      //si en sesion hay una varia user, quiere decir que esta autenticado, debido a que estaria la sesion iniciada
+        req.usuarioEsAdmin = req.user.role === "admin"
         next();     //nos pasa al siguiente paso de la operacion, en este caso la de cerrar sesion
     } else {
         res.send(`
@@ -18,11 +19,13 @@ export const checkUserLogged = (req, res, next) => {
 
             <div class="d-flex justify-content-center mt-5 pt-5">
 
-                <div class="p-4 w-25 border border-5 border-warning align-middle">
-                    <h1 class="text-warning fw-bold p-1">Advertencia!</h1>
+                <div class="p-4 w-50 border border-5 border-danger align-middle">
+                    <h1 class="text-danger fw-bold p-1">Advertencia!</h1>
                     <p class="card-text">Para ver el contenido de esta pagina se require iniciar sesion.</p>
                     <br>
-                    <a href="/api/auth/inicio-sesion"> INICIAR SESION </a> 
+                    <a href="/api/auth/inicio-sesion" class="fs-4"> INICIAR SESION </a> 
+                    <br>
+                    <a href="/api/auth/registro" class="fs-6">Todavía no tienes una cuenta?, registrate</a>
 
                 </div>
             </div>

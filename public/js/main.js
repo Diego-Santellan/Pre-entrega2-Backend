@@ -39,7 +39,6 @@ const buttonSend = document.getElementById('buttonSend')
 const postMessageForm = document.getElementById('postMessageForm')
 postMessageForm.addEventListener('submit', e => {
     e.preventDefault()
-
     const message = { autor: inputEmail.value, texto: inputMessage.value }
     socket.emit('newMessage', message);
     postMessageForm.reset()
@@ -65,8 +64,8 @@ function makeHtmlList(messages) {
 }
 
 inputEmail.addEventListener('input', () => {
-    const hayEmail = inputEmail.value.length
-    const hayTexto = inputMessage.value.length
+    const hayEmail = inputEmail.value.length;
+    const hayTexto = inputMessage.value.length;
     inputMessage.disabled = !hayEmail
     buttonSend.disabled = !hayEmail || !hayTexto
 })
@@ -75,3 +74,4 @@ inputMessage.addEventListener('input', () => {
     const hayTexto = inputMessage.value.length
     buttonSend.disabled = !hayTexto
 })
+

@@ -1,1 +1,53 @@
-<h2 action="/" method="get" class="mx-5 my-2">Home view</h2>
+<h2 action="/" method="get" class="mx-5 my-2"></h2>
+
+<div class="container mt-5 w-50 d-block justify-content-center">
+    <div class="jumbotron">
+        <h1 >Ingrese Producto</h1>
+        <br>
+
+        <form id="addProductForm" action="/api/products/" method="POST">
+            <!-- Campo nombre del product -->
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" class="form-control" type="text" name="title" required>
+            </div>
+
+            <!-- Campo precio del product -->
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input id="precio" class="form-control" type="number" step="0.01" name="price" required>
+            </div>
+
+            <!-- Campo url de la foto del product -->
+            <div class="form-group">
+                <label for="foto">Foto URL</label>
+                <input id="foto" class="form-control" type="url" name="thumbnail">
+            </div>
+
+            <!-- Botón de envío -->
+            <button  class="btn btn-success mt-3">Enviar</button>
+        </form>
+        <br>
+        <div id="products"></div>
+    </div>
+    <br>
+
+    <div class="rounded-4 border border-3 border-warning p-5 my-5">
+        <h1>Centro de Mensajes</h1>
+        <br>
+
+        <input type="text" id="inputEmail" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu email">
+
+        <hr>
+
+        <div id="messages"></div>
+
+        <form id="postMessageForm" class="form-inline" autocomplete="off">
+            <div class="form-group">
+                <input disabled id="inputMessage" type="text" class="form-control my-2 mr-2" placeholder="Ingresá un mensaje...">
+                <button style="background-color: #025159;" disabled id="buttonSend" type="submit" class="btn btn-success my-2">Enviar!</button>
+            </div>
+        </form>
+    </div>
+
+</div>

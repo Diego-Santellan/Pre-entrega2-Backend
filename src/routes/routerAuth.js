@@ -1,9 +1,10 @@
 import { Router } from "express";
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import UserModel from "../models/dbModels/user/user.model.js";
+import UserModel from "../models/user/user.model.js";
 import bcrypt from "bcryptjs";
 import { checkUserLogged } from "../middlewares/verificarUser.js";
+import soloAdmins from "../middlewares/verificarAdmin.js";
 
 const routerAuth = new Router();
 
@@ -25,7 +26,7 @@ passport.deserializeUser((id, done) => {
 });
 
 //crear estrategia para registrar a los usuarios
-passport.use("signupStrategy", new Strategy(//primer parametro nombre de la estrategia, segundo parametro logica de la estrategia para registrar a los usuarios
+passport.use("signupStrategy",new Strategy(//primer parametro nombre de la estrategia, segundo parametro logica de la estrategia para registrar a los usuarios
     {
       passReqToCallback: true,
     },
@@ -46,12 +47,14 @@ passport.use("signupStrategy", new Strategy(//primer parametro nombre de la estr
             // 2. Crear el nuevo usuario en la base de datos
             const newUser = {
                 name: req.body.name,
-                username: username,
+                username: req.body.username,
                 password: hashedPassword,
                 email: req.body.email,
                 address: req.body.address,
                 age: req.body.age,
-                phoneNumber: req.body.phoneNumber
+                phoneNumber: req.body.phoneNumber,
+                thumbnail: req.body.thumbnail,
+                role:'client'   
                 
             };
   
@@ -84,12 +87,14 @@ passport.use("loginStrategy", new Strategy(
                     }
                     return done (null, userDB);
                 } catch (error) {
+                    console.log(error);
                     return done(error);
                 }
             });
 
     }
 ));
+
 
 
 //ROUTERS
@@ -120,9 +125,32 @@ routerAuth.get("/inicio-sesion", (req, res) => {
 });
 
 //Perfil
-routerAuth.get("/perfil", checkUserLogged, (req,res)=>{
-    res.render("profile");
+routerAuth.get("/perfil", checkUserLogged, async (req,res)=>{
+    const user = {
+        name: req.user.name,
+        age: req.user.age,
+        address: req.user.address,
+        email: req.user.email,
+        thumbnail: req.user.thumbnail,
+        role:'client'
+    }
+    res.render("profile",{user: user, esAmind: req.usuarioEsAdmin});
 });
+
+//Home
+routerAuth.get("/home", checkUserLogged, soloAdmins,  (req, res) => {   
+    res.render("home");
+})
+
+//Polictics
+routerAuth.get("/politics", checkUserLogged, (req, res) => {
+    res.render("politics");
+})
+
+//Nosotros
+routerAuth.get("/nosotros", checkUserLogged, (req, res) => {
+    res.render("nosotros");
+})
 
 //por lo general se usa un metodo post
 routerAuth.get("/logout",  (req, res) => { 
@@ -131,7 +159,7 @@ routerAuth.get("/logout",  (req, res) => {
 
         req.session.destroy( error => {
             if(error) return console.log("Hubo un error al cerrar la sesion");     //para eliminar la sesion del lado del servidor
-            res.redirect("/home"); 
+            res.redirect("/api/auth/inicio-sesion"); 
         });
 
     });

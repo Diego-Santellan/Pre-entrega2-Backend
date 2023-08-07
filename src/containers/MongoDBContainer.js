@@ -27,6 +27,30 @@ class MongoDBContainer{
         }
     }
 
+    async searchProducts(title) {
+        // try {
+        //     const docs = await this.collection.find({'title': title})      //Buscamos el obj
+        //     if (docs.length == 0) {
+        //         return {message:'Producto no encontrado'}
+        //     } else {  
+        //         return docs
+        //     }
+
+        // } catch (error) {
+        //     return {message:'Producto no encontrado'}
+        // }
+        try {
+            let docs = await this.collection.find({'title': title}, {__v: 0}).lean()      
+            docs = docs.map(asPOJO)
+            docs = docs.map( ds => renameField(ds,'_id', 'id'))
+            return docs
+
+        } catch (error) {
+            throw new Error(`Error al toList todo: ${error}`)
+        }
+
+    }
+
     async toListAll() {
         try {
             let docs = await this.collection.find({}, {__v: 0}).lean()      
